@@ -1,0 +1,6 @@
+http:
+  services:
+    immich-svc:
+      loadBalancer:
+        servers:
+          - url: http://immich-server:2283

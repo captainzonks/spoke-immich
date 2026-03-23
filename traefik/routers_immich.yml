@@ -1,0 +1,50 @@
+http:
+  routers:
+    immich-well-known:
+      rule: Host(`img.{{ env "DOMAIN" }}`) && PathPrefix(`/.well-known/immich`)
+      entryPoints: "websecure"
+      priority: 300
+      middlewares: chain-no-auth@file
+      service: immich-svc@file
+
+    immich-api-websocket:
+      rule: Host(`img.{{ env "DOMAIN" }}`) && PathPrefix(`/api/socket.io`)
+      entryPoints: "websecure"
+      priority: 250
+      middlewares: chain-websocket@file
+      service: immich-svc@file
+
+    immich-static-assets:
+      rule: Host(`img.{{ env "DOMAIN" }}`) && (PathPrefix(`/_app/`) || PathPrefix(`/static/`) || PathPrefix(`/fonts/`))
+      entryPoints: "websecure"
+      priority: 240
+      middlewares: chain-static-assets@file
+      service: immich-svc@file
+
+    immich-upload:
+      rule: Host(`img.{{ env "DOMAIN" }}`) && PathPrefix(`/api/assets`) && Method(`POST`)
+      entryPoints: "websecure"
+      priority: 210
+      middlewares: chain-upload@file
+      service: immich-svc@file
+
+    immich-api:
+      rule: Host(`img.{{ env "DOMAIN" }}`) && PathPrefix(`/api`)
+      entryPoints: "websecure"
+      priority: 200
+      middlewares: chain-api@file
+      service: immich-svc@file
+
+    immich-share:
+      rule: Host(`img.{{ env "DOMAIN" }}`) && PathPrefix(`/s/`)
+      entryPoints: "websecure"
+      priority: 190
+      middlewares: chain-no-auth@file
+      service: immich-svc@file
+
+    immich:
+      rule: Host(`img.{{ env "DOMAIN" }}`)
+      entryPoints: "websecure"
+      priority: 100
+      middlewares: chain-media@file
+      service: immich-svc@file

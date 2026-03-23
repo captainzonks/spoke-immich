@@ -1,0 +1,268 @@
+# ==============================================================================
+# SPOKE-IMMICH - DOCKER COMPOSE
+# ==============================================================================
+# Description: Self-hosted photo and video management platform
+# Version: 1.0.0
+# Created: 2026-02-13
+# Modified: 2026-02-13
+# ==============================================================================
+# Module: immich
+# Config Sources: .env (hub vars injected by Spoke + module defaults)
+# Security: non-root where possible, secrets via /run/secrets/
+# Hardware: GPU passthrough for hardware transcoding (render group 989)
+# ==============================================================================
+# Container Images:
+#   IMMICH_SERVER_IMAGE (ghcr.io/immich-app/immich-server:v2.5.6)
+#   IMMICH_MACHINE_LEARNING_IMAGE (ghcr.io/immich-app/immich-machine-learning:v2.5.6)
+#   IMMICH_POSTGRES_IMAGE (ghcr.io/immich-app/postgres:14-vectorchord0.4.3-pgvectors0.2.0)
+#   IMMICH_REDIS_IMAGE (docker.io/valkey/valkey:9)
+# Networks:
+#   - troxy (192.168.35.0/24) - main application network
+# ==============================================================================
+
+name: spoke-immich
+
+############################ EXTENSIONS
+
+x-ssl: &ssl
+  environment:
+    - SSL_CERT_FILE=${SSL_CERT_FILE}
+    - REQUESTS_CA_BUNDLE=${REQUESTS_CA_BUNDLE}
+    - CURL_CA_BUNDLE=${CURL_CA_BUNDLE}
+
+  volumes:
+    - ${CA_CERT}:/etc/ssl/certs/ca-certificates.crt:ro
+
+x-logging-small: &log_small
+  logging:
+    driver: json-file
+    options:
+      max-size: 10m
+      max-file: "2"
+
+############################ NETWORKS
+
+networks:
+  troxy:
+    external: true
+
+############################# SECRETS
+
+secrets:
+  immich_db_password:
+    file: ${SECRETS_DIR}/immich/immich_db_password
+
+############################# SERVICES
+
+services:
+  #======================================
+  # IMMICH SERVER - Main Application
+  #======================================
+  immich-server:
+    <<: [*ssl, *log_small]
+    image: ${IMMICH_SERVER_IMAGE}
+    hostname: immich-server
+    container_name: immich-server
+    restart: on-failure
+    init: true
+
+    security_opt:
+      - no-new-privileges=true
+    mem_limit: 2048M
+    cpus: 2.0
+    cap_drop:
+      - ALL
+    user: ${PUID}:${DGID}
+    group_add:
+      - "989"
+
+    devices:
+      - /dev/dri:/dev/dri
+
+    networks:
+      troxy:
+        ipv4_address: ${IMMICH_SERVER_IP}
+
+    ports:
+      - 2283:2283
+
+    expose:
+      - 2283/tcp
+
+    depends_on:
+      immich-redis:
+        condition: service_healthy
+      immich-postgres:
+        condition: service_healthy
+
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:2283/api/server/ping || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+
+    environment:
+      - TZ=${TZ}
+      - DOMAIN=${DOMAIN}
+      - IMMICH_VERSION=${IMMICH_VERSION}
+      - DB_HOSTNAME=immich-postgres
+      - DB_PORT=5432
+      - DB_USERNAME=${IMMICH_DB_USER}
+      - DB_PASSWORD_FILE=/run/secrets/immich_db_password
+      - DB_DATABASE_NAME=${IMMICH_DB_NAME}
+      - REDIS_HOSTNAME=immich-redis
+      - REDIS_PORT=6379
+      - LOG_LEVEL=log
+      - IMMICH_MEDIA_LOCATION=/data
+
+    volumes:
+      - ${IMMICH_UPLOAD_DIR}:/data:rw
+      - ${IMMICH_LIBRARY_DIR}:/library:rw
+      - ${LOCALTIME}:/etc/localtime:ro
+
+    tmpfs:
+      - /tmp/:rw,size=500m
+
+    secrets:
+      - immich_db_password
+
+  #======================================
+  # IMMICH ML - Machine Learning Inference
+  #======================================
+  immich-machine-learning:
+    <<: [*ssl, *log_small]
+    image: ${IMMICH_MACHINE_LEARNING_IMAGE}
+    hostname: immich-ml
+    container_name: immich-machine-learning
+    restart: on-failure
+    init: true
+
+    security_opt:
+      - no-new-privileges=true
+    mem_limit: 4096M
+    cpus: 2.0
+    cap_drop:
+      - ALL
+
+    networks:
+      troxy:
+        ipv4_address: ${IMMICH_ML_IP}
+
+    expose:
+      - 3003/tcp
+
+    healthcheck:
+      disable: true
+
+    environment:
+      - TZ=${TZ}
+      - MACHINE_LEARNING_CACHE_FOLDER=/cache
+      - TRANSFORMERS_CACHE=/cache
+
+    volumes:
+      - ${APPDATA_DIR}/immich/model-cache:/cache:rw
+      - ${LOCALTIME}:/etc/localtime:ro
+
+    tmpfs:
+      - /tmp/:rw,size=1g
+
+  #======================================
+  # IMMICH POSTGRES - Database
+  #======================================
+  immich-postgres:
+    <<: *log_small
+    image: ${IMMICH_POSTGRES_IMAGE}
+    hostname: immich-postgres
+    container_name: immich-postgres
+    restart: on-failure
+
+    security_opt:
+      - no-new-privileges=true
+    mem_limit: 2048M
+    cpus: 2.0
+
+    networks:
+      troxy:
+        ipv4_address: ${IMMICH_POSTGRES_IP}
+
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${IMMICH_DB_USER} -d ${IMMICH_DB_NAME} || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+
+    environment:
+      - TZ=${TZ}
+      - POSTGRES_USER=${IMMICH_DB_USER}
+      - POSTGRES_PASSWORD_FILE=/run/secrets/immich_db_password
+      - POSTGRES_DB=${IMMICH_DB_NAME}
+      - POSTGRES_INITDB_ARGS=--data-checksums
+
+    volumes:
+      - ${APPDATA_DIR}/immich/postgres:/var/lib/postgresql/data:rw
+      - ${LOCALTIME}:/etc/localtime:ro
+
+    shm_size: 256mb
+
+    secrets:
+      - immich_db_password
+
+  #======================================
+  # IMMICH REDIS - Cache & Job Queue
+  #======================================
+  immich-redis:
+    <<: *log_small
+    image: ${IMMICH_REDIS_IMAGE}
+    hostname: immich-redis
+    container_name: immich-redis
+    restart: on-failure
+    init: true
+
+    security_opt:
+      - no-new-privileges=true
+    mem_limit: 256M
+    cpus: 0.5
+
+    networks:
+      troxy:
+        ipv4_address: ${IMMICH_REDIS_IP}
+
+    healthcheck:
+      test: ["CMD-SHELL", "redis-cli ping || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
+
+    environment:
+      - TZ=${TZ}
+
+    volumes:
+      - ${APPDATA_DIR}/immich/redis:/data:rw
+      - ${LOCALTIME}:/etc/localtime:ro
+
+    command:
+      - valkey-server
+      - --maxmemory
+      - 200mb
+      - --maxmemory-policy
+      - allkeys-lru
+      - --save
+      - "900"
+      - "1"
+      - --save
+      - "300"
+      - "10"
+      - --save
+      - "60"
+      - "10000"
+      - --loglevel
+      - warning
+      - --tcp-keepalive
+      - "300"
+      - --timeout
+      - "0"
+      - --databases
+      - "16"

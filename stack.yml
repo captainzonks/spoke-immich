@@ -1,0 +1,50 @@
+module:
+  name: immich
+  version: 1.0.0
+  description: "Self-hosted photo and video management platform"
+  author: "Matt Barham"
+  license: MIT
+
+requires:
+  networks:
+    - name: troxy
+      required: true
+  hub_services:
+    - traefik
+
+env:
+  hub:
+    - TZ
+    - DOMAIN
+    - SPOKE_DIR
+    - SECRETS_DIR
+    - APPDATA_DIR
+    - DATA_DIR
+    - PUID
+    - DGID
+    - SSL_CERT_FILE
+    - REQUESTS_CA_BUNDLE
+    - CURL_CA_BUNDLE
+    - CA_CERT
+    - LOCALTIME
+  module:
+    - IMMICH_VERSION
+    - IMMICH_SERVER_IMAGE
+    - IMMICH_MACHINE_LEARNING_IMAGE
+    - IMMICH_POSTGRES_IMAGE
+    - IMMICH_REDIS_IMAGE
+    - IMMICH_SERVER_IP
+    - IMMICH_ML_IP
+    - IMMICH_POSTGRES_IP
+    - IMMICH_REDIS_IP
+    - IMMICH_DB_USER
+    - IMMICH_DB_NAME
+
+secrets:
+  - name: immich_db_password
+    required: true
+
+health:
+  - service: immich-server
+    path: /api/server/ping
+    port: 2283
