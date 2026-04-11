@@ -4,7 +4,7 @@
 # Description: Self-hosted photo and video management platform
 # Version: 1.1.0
 # Created: 2026-02-13
-# Modified: 2026-03-31
+# Modified: 2026-04-11
 # ==============================================================================
 # Module: immich
 # Config Sources: .env (hub vars injected by Spoke + module defaults)
@@ -12,8 +12,8 @@
 # Hardware: GPU passthrough for hardware transcoding (render group 989)
 # ==============================================================================
 # Container Images:
-#   IMMICH_SERVER_IMAGE (ghcr.io/immich-app/immich-server:v2.6.3)
-#   IMMICH_MACHINE_LEARNING_IMAGE (ghcr.io/immich-app/immich-machine-learning:v2.6.3)
+#   IMMICH_SERVER_IMAGE (ghcr.io/immich-app/immich-server:v2.7.4)
+#   IMMICH_MACHINE_LEARNING_IMAGE (ghcr.io/immich-app/immich-machine-learning:v2.7.4)
 #   IMMICH_POSTGRES_IMAGE (ghcr.io/immich-app/postgres:18-vectorchord0.5.3-pgvector0.8.1)
 #   IMMICH_REDIS_IMAGE (docker.io/valkey/valkey:9)
 # Networks:
