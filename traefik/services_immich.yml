@@ -1,3 +1,17 @@
+# ==============================================================================
+# IMMICH MODULE - TRAEFIK SERVICES
+# ==============================================================================
+# Description: Traefik dynamic service definitions for the immich module
+# Author: Matt Barham
+# Created: 2026-02-13
+# Modified: 2026-04-21
+# Version: 1.0.1
+# Host: Your Server
+# ==============================================================================
+# Type: Traefik Dynamic Config (services)
+# Component: module: immich
+# ==============================================================================
+
 http:
   services:
     immich-svc:
