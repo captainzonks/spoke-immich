@@ -1,23 +1,32 @@
 # ==============================================================================
-# SPOKE-IMMICH - DOCKER COMPOSE
+# IMMICH MODULE - DOCKER COMPOSE
 # ==============================================================================
 # Description: Self-hosted photo and video management platform
-# Version: 1.1.0
+# Author: Matt Barham
 # Created: 2026-02-13
-# Modified: 2026-04-11
+# Modified: 2026-04-21
+# Version: 1.1.1
+# Host: Your Server
 # ==============================================================================
-# Module: immich
-# Config Sources: .env (hub vars injected by Spoke + module defaults)
+# Component: module: immich
+# Config Sources: base.env + .env.example + modules.yml overrides → .env (generated)
 # Security: non-root where possible, secrets via /run/secrets/
 # Hardware: GPU passthrough for hardware transcoding (render group 989)
 # ==============================================================================
 # Container Images:
-#   IMMICH_SERVER_IMAGE (ghcr.io/immich-app/immich-server:v2.7.4)
-#   IMMICH_MACHINE_LEARNING_IMAGE (ghcr.io/immich-app/immich-machine-learning:v2.7.4)
-#   IMMICH_POSTGRES_IMAGE (ghcr.io/immich-app/postgres:18-vectorchord0.5.3-pgvector0.8.1)
-#   IMMICH_REDIS_IMAGE (docker.io/valkey/valkey:9)
+#   See modules/immich/.env.example for complete image paths and versions
+#   (IMMICH_SERVER_IMAGE, IMMICH_MACHINE_LEARNING_IMAGE,
+#    IMMICH_POSTGRES_IMAGE, IMMICH_REDIS_IMAGE)
+# Documentation:
+#   - Immich: https://immich.app/docs
+#   - Immich GitHub: https://github.com/immich-app/immich
 # Networks:
 #   - troxy (192.168.35.0/24) - main application network
+# Dependencies:
+#   - Hub: traefik
+# External Integrations:
+#   - [x] Traefik routing
+#   - [x] Authentik forward auth (chain-media)
 # ==============================================================================
 
 name: spoke-immich
