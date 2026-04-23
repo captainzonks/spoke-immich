@@ -7,7 +7,7 @@ README.md - spoke-immich module documentation
 Description: Immich self-hosted photo/video management Spoke module
 Author: Matt Barham
 Created: 2026-02-13
-Modified: 2026-04-21
+Modified: 2026-04-23
 Version: 1.0.1
 ==============================================================================
 Document Type: Reference
@@ -48,9 +48,9 @@ docker compose up -d
 
 | Variable                        | Default                                                              | Description            |
 |---------------------------------|----------------------------------------------------------------------|------------------------|
-| `IMMICH_VERSION`                | `v2.6.3`                                                            | Immich version tag     |
-| `IMMICH_SERVER_IMAGE`           | `ghcr.io/immich-app/immich-server:v2.6.3`                           | Server image           |
-| `IMMICH_MACHINE_LEARNING_IMAGE` | `ghcr.io/immich-app/immich-machine-learning:v2.6.3`                 | ML image               |
+| `IMMICH_VERSION`                | `v2.7.5`                                                            | Immich version tag     |
+| `IMMICH_SERVER_IMAGE`           | `ghcr.io/immich-app/immich-server:v2.7.5`                           | Server image           |
+| `IMMICH_MACHINE_LEARNING_IMAGE` | `ghcr.io/immich-app/immich-machine-learning:v2.7.5`                 | ML image               |
 | `IMMICH_POSTGRES_VERSION`       | `18-vectorchord0.5.3-pgvector0.8.1`                                 | Postgres version tag   |
 | `IMMICH_POSTGRES_IMAGE`         | `ghcr.io/immich-app/postgres:18-vectorchord0.5.3-pgvector0.8.1`     | Postgres image         |
 | `IMMICH_REDIS_VERSION`          | `9`                                                                  | Valkey version tag     |
