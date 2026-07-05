@@ -48,9 +48,9 @@ docker compose up -d
 
 | Variable                        | Default                                                              | Description            |
 |---------------------------------|----------------------------------------------------------------------|------------------------|
-| `IMMICH_VERSION`                | `v2.7.5`                                                            | Immich version tag     |
-| `IMMICH_SERVER_IMAGE`           | `ghcr.io/immich-app/immich-server:v2.7.5`                           | Server image           |
-| `IMMICH_MACHINE_LEARNING_IMAGE` | `ghcr.io/immich-app/immich-machine-learning:v2.7.5`                 | ML image               |
+| `IMMICH_VERSION`                | `v3.0.1`                                                            | Immich version tag     |
+| `IMMICH_SERVER_IMAGE`           | `ghcr.io/immich-app/immich-server:v3.0.1`                           | Server image           |
+| `IMMICH_MACHINE_LEARNING_IMAGE` | `ghcr.io/immich-app/immich-machine-learning:v3.0.1`                 | ML image               |
 | `IMMICH_POSTGRES_VERSION`       | `18-vectorchord0.5.3-pgvector0.8.1`                                 | Postgres version tag   |
 | `IMMICH_POSTGRES_IMAGE`         | `ghcr.io/immich-app/postgres:18-vectorchord0.5.3-pgvector0.8.1`     | Postgres image         |
 | `IMMICH_REDIS_VERSION`          | `9`                                                                  | Valkey version tag     |
