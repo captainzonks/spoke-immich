@@ -48,11 +48,11 @@ docker compose up -d
 
 | Variable                        | Default                                                              | Description            |
 |---------------------------------|----------------------------------------------------------------------|------------------------|
-| `IMMICH_VERSION`                | `v3.0.1`                                                            | Immich version tag     |
-| `IMMICH_SERVER_IMAGE`           | `ghcr.io/immich-app/immich-server:v3.0.1`                           | Server image           |
-| `IMMICH_MACHINE_LEARNING_IMAGE` | `ghcr.io/immich-app/immich-machine-learning:v3.0.1`                 | ML image               |
-| `IMMICH_POSTGRES_VERSION`       | `18-vectorchord0.5.3-pgvector0.8.1`                                 | Postgres version tag   |
-| `IMMICH_POSTGRES_IMAGE`         | `ghcr.io/immich-app/postgres:18-vectorchord0.5.3-pgvector0.8.1`     | Postgres image         |
+| `IMMICH_VERSION`                | `v3.1.0`                                                            | Immich version tag     |
+| `IMMICH_SERVER_IMAGE`           | `ghcr.io/immich-app/immich-server:v3.1.0`                           | Server image           |
+| `IMMICH_MACHINE_LEARNING_IMAGE` | `ghcr.io/immich-app/immich-machine-learning:v3.1.0`                 | ML image               |
+| `IMMICH_POSTGRES_VERSION`       | `18-vectorchord1.1.1-pgvector0.8.5`                                 | Postgres version tag   |
+| `IMMICH_POSTGRES_IMAGE`         | `ghcr.io/immich-app/postgres:18-vectorchord1.1.1-pgvector0.8.5`     | Postgres image         |
 | `IMMICH_REDIS_VERSION`          | `9`                                                                  | Valkey version tag     |
 | `IMMICH_REDIS_IMAGE`            | `docker.io/valkey/valkey:9`                                          | Valkey/Redis image     |
 | `IMMICH_SERVER_IP`              | `192.168.35.28`                                                      | Server static IP       |
