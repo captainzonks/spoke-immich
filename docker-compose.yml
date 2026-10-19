@@ -153,6 +153,7 @@ services:
     cpus: 2.0
     cap_drop:
       - ALL
+    user: ${PUID}:${DGID}
 
     networks:
       troxy:
